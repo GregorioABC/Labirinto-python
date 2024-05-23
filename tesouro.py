@@ -1,8 +1,5 @@
 class Tesouro:
-    def __init__(self, nome, localizacao, valor):
+    def __init__(self, nome, localizacao, valor=2):
         self.nome = nome
         self.localizacao = localizacao
-        self.valor = valor
-
-    def efeito(self):
-        pass  # Pode ser sobrescrito para diferentes efeitos
+        self.valor = valor  # Valor do tesouro
