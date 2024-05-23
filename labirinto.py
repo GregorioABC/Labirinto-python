@@ -7,10 +7,13 @@ class Labirinto:
         self.estrutura = self.gerar_labirinto()
         self.tesouros = []
         self.perigos = []
+        self.inicio = (0, 0)
+        self.fim = (largura - 1, altura - 1)
 
     def gerar_labirinto(self):
-        # Gera uma matriz 10x10 de 0s (representando caminhos) e 1s (representando paredes)
         labirinto = [[random.choice([0, 1]) for _ in range(self.largura)] for _ in range(self.altura)]
+        labirinto[0][0] = 0  # Assegura que o ponto inicial seja um caminho
+        labirinto[self.altura - 1][self.largura - 1] = 0  # Assegura que o ponto final seja um caminho
         return labirinto
 
     def adicionar_tesouro(self, tesouro):

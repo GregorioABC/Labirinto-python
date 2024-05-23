@@ -18,6 +18,9 @@ class LabirintoGame:
         self.setup_ui()
         self.desenhar_labirinto()
 
+        self.canvas.bind("<Button-1>", self.on_click)
+        self.canvas.bind("<B1-Motion>", self.on_drag)
+
     def setup_ui(self):
         self.label = tk.Label(self.root, text=f"Level: {self.level}")
         self.label.pack()
@@ -39,11 +42,53 @@ class LabirintoGame:
                     (x + 1) * cell_size, (y + 1) * cell_size,
                     fill=color
                 )
+        # Desenha o ponto inicial
+        inicio_x, inicio_y = self.labirinto.inicio
+        self.canvas.create_rectangle(
+            inicio_x * cell_size, inicio_y * cell_size,
+            (inicio_x + 1) * cell_size, (inicio_y + 1) * cell_size,
+            fill="blue"
+        )
+        # Desenha o ponto final
+        fim_x, fim_y = self.labirinto.fim
+        self.canvas.create_rectangle(
+            fim_x * cell_size, fim_y * cell_size,
+            (fim_x + 1) * cell_size, (fim_y + 1) * cell_size,
+            fill="green"
+        )
+        # Desenha o aventureiro
+        av_x, av_y = self.aventureiro.localizacao
+        self.aventureiro_oval = self.canvas.create_oval(
+            av_x * cell_size, av_y * cell_size,
+            (av_x + 1) * cell_size, (av_y + 1) * cell_size,
+            fill="red"
+        )
+
+    def on_click(self, event):
+        self.move_aventureiro(event.x, event.y)
+
+    def on_drag(self, event):
+        self.move_aventureiro(event.x, event.y)
+
+    def move_aventureiro(self, x, y):
+        cell_size = 50
+        new_x = x // cell_size
+        new_y = y // cell_size
+
+        # Verifica se o movimento é válido (dentro dos limites e não em uma parede)
+        if 0 <= new_x < self.labirinto.largura and 0 <= new_y < self.labirinto.altura:
+            if self.labirinto.estrutura[new_y][new_x] == 0:
+                self.aventureiro.mover((new_x, new_y))
+                self.desenhar_labirinto()
+                # Verifica se o aventureiro alcançou o fim do labirinto
+                if (new_x, new_y) == self.labirinto.fim:
+                    self.next_level()
 
     def next_level(self):
         self.level += 1
         self.label.config(text=f"Level: {self.level}")
         self.labirinto = Labirinto()  # Gerar novo labirinto
+        self.aventureiro.mover((0, 0))  # Reiniciar a posição do aventureiro
         self.desenhar_labirinto()
 
         if self.level == 10:
